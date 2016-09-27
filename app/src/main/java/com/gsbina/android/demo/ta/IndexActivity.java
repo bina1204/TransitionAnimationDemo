@@ -41,6 +41,28 @@ public class IndexActivity extends AppCompatActivity {
             return;
         }
         sharedImageId = ImageDetailActivity.getResultOfImageId(data);
+        if (sharedImageId == ImageId.NO_ID) {
+            return;
+        }
+
+        ImageAdapter adapter = (ImageAdapter) recyclerView.getAdapter();
+        int index = adapter.indexOf(sharedImageId);
+        if (index == ImageId.NO_ID) {
+            return;
+        }
+
+        RecyclerView.ViewHolder viewHolder = recyclerView.findViewHolderForAdapterPosition(index);
+        if (viewHolder == null) {
+            ActivityCompat.postponeEnterTransition(this);
+            recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                @Override
+                public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                    recyclerView.removeOnScrollListener(this);
+                    ActivityCompat.startPostponedEnterTransition(IndexActivity.this);
+                }
+            });
+            recyclerView.scrollToPosition(index);
+        }
     }
 
 
@@ -51,7 +73,9 @@ public class IndexActivity extends AppCompatActivity {
                 ImageAdapter adapter = (ImageAdapter) recyclerView.getAdapter();
                 int index = adapter.indexOf(sharedImageId);
                 RecyclerView.ViewHolder viewHolder = recyclerView.findViewHolderForAdapterPosition(index);
-                sharedElements.put(names.get(0), viewHolder.itemView);
+                if (viewHolder != null && viewHolder.itemView != null) {
+                    sharedElements.put(names.get(0), viewHolder.itemView);
+                }
                 sharedImageId = ImageId.NO_ID;
             }
         }
