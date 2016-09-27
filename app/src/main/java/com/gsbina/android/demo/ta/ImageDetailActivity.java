@@ -9,6 +9,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.SharedElementCallback;
 import android.support.v4.view.ViewPager;
+import android.support.v4.view.ViewPager.SimpleOnPageChangeListener;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,10 +25,10 @@ import java.util.Map;
 
 public class ImageDetailActivity extends AppCompatActivity {
 
-    private static final String EXTRA_FIRST_IMAGE_ID = "first_image_id";
+    private static final String EXTRA_IMAGE_ID = "image_id";
 
     private ViewPager viewPager;
-    private int firstImageId;
+    private int currentImageId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,13 +43,19 @@ public class ImageDetailActivity extends AppCompatActivity {
         viewPager = (ViewPager) findViewById(R.id.container);
         viewPager.setAdapter(adapter);
 
-        firstImageId = getIntent().getIntExtra(EXTRA_FIRST_IMAGE_ID, 0);
-        int index = adapter.indexOf(firstImageId);
+        currentImageId = getIntent().getIntExtra(EXTRA_IMAGE_ID, 0);
+        int index = adapter.indexOf(currentImageId);
         if (index >= 0) {
             viewPager.setCurrentItem(index);
         }
 
         viewPager.getViewTreeObserver().addOnGlobalLayoutListener(pagerlayoutlistener);
+        viewPager.addOnPageChangeListener(new SimpleOnPageChangeListener() {
+            @Override
+            public void onPageSelected(int position) {
+                currentImageId = ((ImagePagerAdapter) viewPager.getAdapter()).getImageId(position);
+            }
+        });
     }
 
     private final ViewTreeObserver.OnGlobalLayoutListener pagerlayoutlistener = new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -82,6 +89,14 @@ public class ImageDetailActivity extends AppCompatActivity {
             ((ImageView) rootView.findViewById(R.id.image)).setImageResource(imageId);
             return rootView;
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent data = new Intent();
+        data.putExtra(EXTRA_IMAGE_ID, currentImageId);
+        setResult(RESULT_OK, data);
+        super.onBackPressed();
     }
 
     public class ImagePagerAdapter extends FragmentPagerAdapter {
@@ -122,6 +137,10 @@ public class ImageDetailActivity extends AppCompatActivity {
             return String.valueOf(images.get(position).getId());
         }
 
+        public int getImageId(int position) {
+            return images.get(position).getId();
+        }
+
         public int indexOf(int imageId) {
             return images.indexOf(imageId);
         }
@@ -144,7 +163,7 @@ public class ImageDetailActivity extends AppCompatActivity {
             View view = null;
 
             if (viewPager.getChildCount() > 0) {
-                view =  ((ImagePagerAdapter) viewPager.getAdapter()).findView(firstImageId);
+                view =  ((ImagePagerAdapter) viewPager.getAdapter()).findView(currentImageId);
             }
 
             if (view != null) {
@@ -155,7 +174,11 @@ public class ImageDetailActivity extends AppCompatActivity {
 
     public static Intent createIntent(Context context, ImageId imageId) {
         Intent intent = new Intent(context, ImageDetailActivity.class);
-        intent.putExtra(EXTRA_FIRST_IMAGE_ID, imageId.getId());
+        intent.putExtra(EXTRA_IMAGE_ID, imageId.getId());
         return intent;
     }
-}
+
+    public static int getResultOfImageId(Intent intent) {
+        return intent.getIntExtra(EXTRA_IMAGE_ID, 0);
+    }
+ }

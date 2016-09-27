@@ -4,6 +4,8 @@ import android.support.annotation.DrawableRes;
 
 public class ImageId {
 
+    public static final int NO_ID = -1;
+
     @DrawableRes
     private final int id;
 

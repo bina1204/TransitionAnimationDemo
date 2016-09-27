@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.gsbina.android.demo.ta.ImageDetailActivity;
+import com.gsbina.android.demo.ta.IndexActivity;
 import com.gsbina.android.demo.ta.R;
 import com.gsbina.android.demo.ta.value.ImageId;
 import com.gsbina.android.demo.ta.value.ImageIds;
@@ -41,8 +42,8 @@ public class ImageAdapter extends Adapter<ImageViewHolder> {
                 Activity activity = (Activity) view.getContext();
                 Intent intent = ImageDetailActivity.createIntent(activity, imageId);
                 ActivityOptionsCompat options = ActivityOptionsCompat
-                        .makeSceneTransitionAnimation(activity, holder.imageView, imageId.toString());
-                activity.startActivity(intent, options.toBundle());
+                        .makeSceneTransitionAnimation(activity, view, imageId.toString());
+                activity.startActivityForResult(intent, IndexActivity.REQUEST_IMAGE_DETAIL, options.toBundle());
             }
         });
     }
@@ -50,5 +51,9 @@ public class ImageAdapter extends Adapter<ImageViewHolder> {
     @Override
     public int getItemCount() {
         return images.size();
+    }
+
+    public int indexOf(int imageId) {
+        return images.indexOf(imageId);
     }
 }

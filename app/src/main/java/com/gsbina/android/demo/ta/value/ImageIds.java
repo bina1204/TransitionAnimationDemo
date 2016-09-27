@@ -13,7 +13,7 @@ public class ImageIds extends ArrayList<ImageId> {
             }
         }
 
-        return -1;
+        return ImageId.NO_ID;
     }
 
     public static ImageIds buildImageIds() {
