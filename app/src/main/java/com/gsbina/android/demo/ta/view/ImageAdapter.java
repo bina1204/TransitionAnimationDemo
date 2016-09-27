@@ -1,6 +1,9 @@
 package com.gsbina.android.demo.ta.view;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.widget.RecyclerView.Adapter;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,13 +32,17 @@ public class ImageAdapter extends Adapter<ImageViewHolder> {
     }
 
     @Override
-    public void onBindViewHolder(ImageViewHolder holder, int position) {
+    public void onBindViewHolder(final ImageViewHolder holder, int position) {
         final ImageId imageId = images.get(position);
         holder.imageView.setImageResource(imageId.getId());
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ImageDetailActivity.start(view.getContext(), imageId);
+                Activity activity = (Activity) view.getContext();
+                Intent intent = ImageDetailActivity.createIntent(activity, imageId);
+                ActivityOptionsCompat options = ActivityOptionsCompat
+                        .makeSceneTransitionAnimation(activity, holder.imageView, imageId.toString());
+                activity.startActivity(intent, options.toBundle());
             }
         });
     }
