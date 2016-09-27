@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Transition Animation Demo</string>
+    <string name="desc_image">Image</string>
+</resources>
